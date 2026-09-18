@@ -3,21 +3,17 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { User, AuthProvider } from '../generated/prisma';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const existing = await this.usersRepository.findOne({
+    const existing = await this.prisma.user.findFirst({
       where: {
         provider: createUserDto.provider,
         sub: createUserDto.sub,
@@ -30,16 +26,15 @@ export class UsersService {
       );
     }
 
-    const user = this.usersRepository.create(createUserDto);
-    return this.usersRepository.save(user);
+    return this.prisma.user.create({ data: createUserDto });
   }
 
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.prisma.user.findMany();
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -49,46 +44,26 @@ export class UsersService {
   }
 
   async findByProvider(
-    provider: string,
+    provider: AuthProvider,
     sub: string,
   ): Promise<User | null> {
-    return this.usersRepository.findOne({
-      where: { provider: provider as any, sub },
+    return this.prisma.user.findFirst({
+      where: { provider, sub },
     });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
+    await this.findOne(id); // throws NotFoundException if missing
 
-    Object.assign(user, updateUserDto);
-    return this.usersRepository.save(user);
+    return this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.usersRepository.delete(id);
+    await this.findOne(id); // throws NotFoundException if missing
 
-    if (result.affected === 0) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
+    await this.prisma.user.delete({ where: { id } });
   }
-
-  // create(createUserDto: CreateUserDto) {
-  //   return 'This action adds a new user';
-  // }
-
-  // findAll() {
-  //   return `This action returns all users`;
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
-
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
 }

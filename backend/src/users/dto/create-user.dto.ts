@@ -5,8 +5,7 @@ import {
   IsEnum,
   IsNotEmpty,
 } from 'class-validator';
-import { UserRole } from '../enums/user-role.enum';
-import { AuthProvider } from '../enums/auth-provider.enum';
+import { UserRole, AuthProvider, UserStatus } from '../../generated/prisma';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -29,7 +28,11 @@ export class CreateUserDto {
   @IsString()
   picture?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsEnum(UserRole)
-  role?: UserRole;
+  role: UserRole;
+
+  @IsOptional()
+  @IsEnum(UserStatus)
+  status?: UserStatus;
 }

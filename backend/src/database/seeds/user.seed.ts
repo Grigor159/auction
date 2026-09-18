@@ -1,13 +1,9 @@
-import { DataSource } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
+import { PrismaClient } from '../../generated/prisma';
 import { Users } from './data/users.data';
 
-export async function seedUsers(connection: DataSource) {
-  const userRepository = connection.getRepository(User);
-
-
+export async function seedUsers(prisma: PrismaClient) {
   for (const userData of Users) {
-    const existing = await userRepository.findOne({
+    const existing = await prisma.user.findUnique({
       where: { email: userData.email },
     });
 
@@ -16,8 +12,9 @@ export async function seedUsers(connection: DataSource) {
       continue;
     }
 
-    const user = userRepository.create(userData);
-    await userRepository.save(user);
-    console.log(`Seeded user: ${userData.name}`);
+    const user = await prisma.user.create({
+      data: userData,
+    });
+    console.log(`Seeded user: ${user.name}`);
   }
 }

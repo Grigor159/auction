@@ -1,0 +1,5 @@
+npx prisma init --datasource-provider postgresql -> add DATABASE_URL in env and create prisma/schema.prisma
+npx prisma generate -> create generated folder inside src 
+npx prisma migrate dev --name NAME_OF_ACTION -> for db changes (add,edit,delete)
+npm run seed SEEDER_NAME -> do seed
+npx prisma studio  -> run prisma studio in 5555 port
