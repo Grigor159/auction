@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserStatus } from '../enums/user-status.enum';
 import { AuthProvider } from '../enums/auth-provider.enum';
 import { UserRole } from '../enums/user-role.enum';
 
@@ -19,8 +20,8 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   name: string | null;
 
-  @Column({ default: true })
-  status: boolean;
+  @Column({ type: 'enum', enum: UserStatus, default: UserStatus.DEACTIVE })
+  status: UserStatus;
 
   // ─── OAuth ───
   @Column({ type: 'enum', enum: AuthProvider, nullable: true })

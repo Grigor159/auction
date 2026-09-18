@@ -3,12 +3,13 @@ import {
   IsString,
   IsOptional,
   IsEnum,
-  IsBoolean,
+  IsNotEmpty,
 } from 'class-validator';
 import { UserRole } from '../enums/user-role.enum';
 import { AuthProvider } from '../enums/auth-provider.enum';
 
 export class CreateUserDto {
+  @IsNotEmpty()
   @IsEmail()
   email: string;
 
@@ -16,11 +17,13 @@ export class CreateUserDto {
   @IsString()
   name?: string;
 
+  @IsOptional()
   @IsEnum(AuthProvider)
-  provider: AuthProvider;
+  provider?: AuthProvider;
 
+  @IsOptional()
   @IsString()
-  sub: string;
+  sub?: string;
 
   @IsOptional()
   @IsString()
@@ -29,8 +32,4 @@ export class CreateUserDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
-
-  @IsOptional()
-  @IsBoolean()
-  status?: boolean;
 }

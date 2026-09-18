@@ -1,11 +1,12 @@
 import { UserRole } from '../../../users/enums/user-role.enum';
 import { AuthProvider } from '../../../users/enums/auth-provider.enum';
+import { UserStatus } from '../../../users/enums/user-status.enum';
 
 export const Users = [
   {
     email: 'grigsgog@gmail.com',
     name: 'Grigor Safaryan',
-    status: true, // active
+    status: UserStatus.DEACTIVE,
     provider: AuthProvider.GOOGLE,
     sub: '100987032133911333272',
     picture:
