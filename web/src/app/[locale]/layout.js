@@ -1,8 +1,11 @@
 import { getLocale, getMessages } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AuthProvider } from "@/providers/authProvider";
 import { ChakraUIProvider } from "@/providers/chakraProvider";
 import { NextIntlClientProvider } from "next-intl";
 import "../index.css";
+import { Header } from "@/components/ui/header";
+import { ScrollToTop } from "@/components/ui/scroll-top";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,11 +29,15 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <ChakraUIProvider>
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            {children}
-          </NextIntlClientProvider>
-        </ChakraUIProvider>
+        <AuthProvider>
+          <ChakraUIProvider>
+            <NextIntlClientProvider locale={locale} messages={messages}>
+              <Header />
+              {children}
+              <ScrollToTop />
+            </NextIntlClientProvider>
+          </ChakraUIProvider>
+        </AuthProvider>
       </body>
     </html >
   );
